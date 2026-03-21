@@ -54,16 +54,9 @@ wireguard-tools
 nmap-ncat
 openssh-clients
 
-# ── Python (pyenv deps) ───────────────────────────────────────────────────────
-python3-pyserial
-bzip2-devel
-libffi-devel
-openssl-devel
-readline-devel
-sqlite-devel
-tk-devel
-xz-devel
-zlib-ng-compat-devel
+# ── Python ────────────────────────────────────────────────────────────────────
+# python managed by mise (python = "3.13"); uv handles script venvs.
+# python3-pyserial no longer needed — uv installs it in an isolated venv for ttgo2.py.
 
 # ── Dev libraries ─────────────────────────────────────────────────────────────
 gcc

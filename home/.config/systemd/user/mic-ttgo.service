@@ -3,16 +3,15 @@ Description=Mic Mute/Unmute → TTGO Display
 After=default.target
 
 [Service]
-# Python path via pyenv — update version if you change pyenv default
-ExecStart=%h/.pyenv/versions/3.13.7/bin/python3 %h/apps/ttgo2.py
+# uv run reads the PEP 723 inline metadata in ttgo2.py and auto-manages
+# an isolated venv with pyserial. No pyenv or manual pip install needed.
+# uv is managed by mise; shim path is stable after 'mise install'.
+ExecStart=%h/.local/share/mise/shims/uv run %h/apps/ttgo2.py
 WorkingDirectory=%h/apps
 StandardOutput=journal
 StandardError=journal
 Restart=always
 RestartSec=5
-
-# Uncomment if PulseAudio/Pipewire needs to be running first:
-# Environment=PULSE_SERVER=unix:/run/user/%U/pulse/native
 
 [Install]
 WantedBy=default.target

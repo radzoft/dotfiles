@@ -44,10 +44,8 @@ shopt -s autocd
 # ── Mise ──────────────────────────────────────────────────────────────────────
 eval "$("$HOME/.local/bin/mise" activate bash 2>/dev/null || mise activate bash)"
 
-# ── Pyenv ─────────────────────────────────────────────────────────────────────
-export PYENV_ROOT="$HOME/.pyenv"
-[[ -d "$PYENV_ROOT/bin" ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init - bash 2>/dev/null || true)"
+# Python managed by mise (python = "3.13" in ~/.config/mise/config.toml)
+# uv handles isolated script environments (e.g. ttgo2.py)
 
 # ── Bun globals (bun version managed by mise; globals installed via bun add -g) ──
 export BUN_INSTALL="$HOME/.bun"

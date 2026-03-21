@@ -60,40 +60,24 @@ Some extensions may not yet support GNOME 48 (Fedora 43). Options:
 PaperWM tracks GNOME releases closely. Check:
 https://github.com/paperwm/PaperWM/releases
 
-## If pyenv/TTGO service breaks
+## If the TTGO service breaks
 
-The `mic-ttgo.service` hardcodes the Python version path. If Python changes:
+The service now uses `uv run` — no Python version is hardcoded.
+`uv` reads the inline `pyserial` dependency from `ttgo2.py` and manages the venv automatically.
 
 ```bash
-# Check current pyenv version
-pyenv versions
+# Test the script directly
+uv run ~/apps/ttgo2.py
 
-# Update the service file
-nano ~/dotfiles/home/.config/systemd/user/mic-ttgo.service
-# Change: 3.13.7 → your new version
+# Check service logs
+journalctl --user -u mic-ttgo.service -f
 
-# Relink and restart
-cd ~/dotfiles && mise run link
-systemctl --user daemon-reload
-systemctl --user restart mic-ttgo.service
+# If uv shim path changed (rare), update the service and relink
+cd ~/dotfiles
+# edit home/.config/systemd/user/mic-ttgo.service
+mise run link
+systemctl --user daemon-reload && systemctl --user restart mic-ttgo.service
 ```
-
-Or make it version-agnostic by adding a wrapper script (see below).
-
-### Tip: version-agnostic TTGO wrapper
-
-Create `~/apps/run-ttgo.sh`:
-```bash
-#!/usr/bin/env bash
-exec "$(pyenv which python3)" "$HOME/apps/ttgo2.py" "$@"
-```
-
-Then in `mic-ttgo.service`:
-```
-ExecStart=%h/apps/run-ttgo.sh
-```
-
-This avoids hardcoding the Python version in the service.
 
 ## Fresh install (new machine or reinstall)
 

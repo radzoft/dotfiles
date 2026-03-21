@@ -128,26 +128,19 @@ sudo udevadm trigger
 echo "✅  Udev rules installed"
 """
 
-[tasks.python-setup]
-description = "Install pyenv + Python 3.13 + TTGO dependencies"
+[tasks.ttgo-warmup]
+description = "Pre-warm the uv environment for ttgo2.py (caches pyserial venv)"
+depends = ["tools"]
 run = """
 #!/usr/bin/env bash
 set -euo pipefail
-
-# Install pyenv if missing
-if ! command -v pyenv &>/dev/null; then
-  echo "Installing pyenv..."
-  curl -fsSL https://pyenv.run | bash
-fi
-
-pyenv install --skip-existing 3.13.7
-pyenv global 3.13.7
-
-PYTHON="$HOME/.pyenv/versions/3.13.7/bin/python3"
-echo "Installing TTGO Python dependencies..."
-"$PYTHON" -m pip install --upgrade pip
-"$PYTHON" -m pip install pyserial psutil
-echo "✅  Python + TTGO deps installed"
+# uv run reads the PEP 723 inline metadata and creates an isolated venv.
+# Running it once here caches the environment so the service starts instantly.
+echo "Pre-warming uv env for ttgo2.py..."
+uv run --no-project "$HOME/apps/ttgo2.py" --help 2>/dev/null || \
+  uv run --no-project "$HOME/apps/ttgo2.py" &
+sleep 3 && kill %1 2>/dev/null || true
+echo "✅  uv env cached for ttgo2.py"
 """
 
 # ─── Snapshot Task (run before upgrades) ─────────────────────────────────────

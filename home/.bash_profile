@@ -3,10 +3,7 @@
 # Source .bashrc (handles all env setup)
 [ -f ~/.bashrc ] && . ~/.bashrc
 
-# ── Pyenv (login shell) ───────────────────────────────────────────────────────
-export PYENV_ROOT="$HOME/.pyenv"
-[[ -d "$PYENV_ROOT/bin" ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init - bash 2>/dev/null || true)"
+# Python managed by mise — no pyenv needed
 
 # ── Bun globals (login shell) ────────────────────────────────────────────────
 export BUN_INSTALL="$HOME/.bun"

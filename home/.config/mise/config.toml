@@ -7,9 +7,12 @@
 bun  = "latest"   # package manager & runtime (replaces volta)
 node = "22"       # LTS — some tools still need node explicitly
 
+# ── Python (replaces pyenv) ───────────────────────────────────────────────────
+python = "3.13"   # global python / python3 on PATH
+uv     = "latest" # isolated script runner + fast pip (manages ttgo2.py venv)
+
 # ── Other runtimes ────────────────────────────────────────────────────────────
 go   = "latest"
-uv   = "latest"   # fast Python package runner
 
 # ── Shell tools ───────────────────────────────────────────────────────────────
 bat    = "latest"  # better cat
