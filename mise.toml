@@ -41,6 +41,18 @@ backup_if_exists .zshrc
 
 echo "Symlinking dotfiles (stow home/ → ~/)"
 stow --dir="$(pwd)" --target="$HOME" --restow home
+
+# radzoft/.gitconfig lives outside the stow package (in the radzoft project dir)
+mkdir -p "$HOME/radzoft"
+if [[ ! -f "$HOME/radzoft/.gitconfig" ]]; then
+  echo "Creating ~/radzoft/.gitconfig"
+  cat > "$HOME/radzoft/.gitconfig" <<'EOF'
+[user]
+	email = glen@radzoft.com
+	name = glen
+EOF
+fi
+
 echo "✅  Dotfiles linked"
 """
 

@@ -1,5 +1,5 @@
 [user]
-	email = glen@seansoftinc.com
+	email = glen@radzoft.com
 	name = glen
 	signingkey = BC87518DE1F9C71D529ACE15281DF1B52DF12B00
 
@@ -35,5 +35,15 @@
 [init]
 	defaultBranch = main
 
+# ── Per-directory identities ──────────────────────────────────────────────────
 [includeIf "gitdir:~/radzoft/"]
 	path = ~/radzoft/.gitconfig
+
+[includeIf "gitdir:~/dotfiles/"]
+	path = ~/radzoft/.gitconfig
+
+[includeIf "gitdir:~/seansoft/"]
+	path = ~/.config/git/seansoft.gitconfig
+
+[includeIf "gitdir:~/valormm/"]
+	path = ~/.config/git/seansoft.gitconfig
