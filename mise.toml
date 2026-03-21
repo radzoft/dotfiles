@@ -1,0 +1,145 @@
+# mise.toml — dotfiles repo entry point
+# Usage: mise run <task>
+# Docs: https://mise.jdx.dev/tasks/
+
+[tools]
+# Tools needed to run the bootstrap itself
+usage = "latest"
+
+# ─── Bootstrap Tasks ──────────────────────────────────────────────────────────
+
+[tasks.bootstrap]
+description = "Full workstation bootstrap (run once on fresh install)"
+depends = ["packages", "link", "tools", "gnome", "services", "udev"]
+run = """
+echo ""
+echo "✅  Bootstrap complete!"
+echo "   Restart your session to apply GNOME changes."
+echo "   Don't forget to: cp ~/dotfiles/home/.bashrc.secrets.template ~/.bashrc.secrets"
+"""
+
+[tasks.link]
+description = "Symlink dotfiles via stow (home/ → ~/)"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$MISE_TOML_PATH")"
+
+# Backup any conflicting files before stow
+backup_if_exists() {
+  local file="$HOME/$1"
+  if [[ -f "$file" && ! -L "$file" ]]; then
+    echo "  Backing up $file → $file.dotbak"
+    mv "$file" "$file.dotbak"
+  fi
+}
+
+backup_if_exists .bashrc
+backup_if_exists .bash_profile
+backup_if_exists .gitconfig
+backup_if_exists .zshrc
+
+echo "Symlinking dotfiles (stow home/ → ~/)"
+stow --dir="$(pwd)" --target="$HOME" --restow home
+echo "✅  Dotfiles linked"
+"""
+
+[tasks.packages]
+description = "Install DNF packages from system/packages.txt"
+run = "./scripts/install-packages.sh"
+
+[tasks.flatpaks]
+description = "Install Flatpak apps from system/flatpaks.txt"
+run = "./scripts/install-flatpaks.sh"
+
+[tasks.tools]
+description = "Install mise-managed tools (bat, eza, fzf, go, node, tmux, zellij…)"
+run = """
+#!/usr/bin/env bash
+# Install tools from the global mise config (symlinked via stow)
+mise install --config "$HOME/.config/mise/config.toml"
+echo "✅  Mise tools installed"
+"""
+
+[tasks.gnome]
+description = "Restore GNOME keybindings, PaperWM settings and media keys"
+run = "./scripts/restore-gnome.sh"
+
+[tasks.extensions]
+description = "Install GNOME extensions from gnome/extensions.txt"
+run = "./scripts/install-extensions.sh"
+
+[tasks.services]
+description = "Enable systemd user services (mic-ttgo, autoforge)"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+systemctl --user daemon-reload
+for svc in mic-ttgo autoforge; do
+  if systemctl --user list-unit-files "${svc}.service" &>/dev/null; then
+    echo "Enabling $svc.service"
+    systemctl --user enable --now "${svc}.service" || echo "  (skipped — check service file)"
+  else
+    echo "Warning: ${svc}.service not found (stow link may be missing)"
+  fi
+done
+echo "✅  Services enabled"
+"""
+
+[tasks.udev]
+description = "Install udev rules (requires sudo)"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+RULES_DIR="$(dirname "$MISE_TOML_PATH")/system/udev"
+echo "Installing udev rules from $RULES_DIR"
+sudo cp "$RULES_DIR"/*.rules /etc/udev/rules.d/
+sudo udevadm control --reload-rules
+sudo udevadm trigger
+echo "✅  Udev rules installed"
+"""
+
+[tasks.python-setup]
+description = "Install pyenv + Python 3.13 + TTGO dependencies"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Install pyenv if missing
+if ! command -v pyenv &>/dev/null; then
+  echo "Installing pyenv..."
+  curl -fsSL https://pyenv.run | bash
+fi
+
+pyenv install --skip-existing 3.13.7
+pyenv global 3.13.7
+
+PYTHON="$HOME/.pyenv/versions/3.13.7/bin/python3"
+echo "Installing TTGO Python dependencies..."
+"$PYTHON" -m pip install --upgrade pip
+"$PYTHON" -m pip install pyserial psutil
+echo "✅  Python + TTGO deps installed"
+"""
+
+# ─── Snapshot Task (run before upgrades) ─────────────────────────────────────
+
+[tasks.snapshot]
+description = "Snapshot current GNOME settings + package lists into repo"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+REPO="$(dirname "$MISE_TOML_PATH")"
+
+echo "Snapshotting GNOME settings..."
+dconf dump /org/gnome/shell/extensions/paperwm/ > "$REPO/gnome/paperwm.dconf"
+dconf dump /org/gnome/desktop/wm/keybindings/   > "$REPO/gnome/wm-keybindings.dconf"
+dconf dump /org/gnome/settings-daemon/plugins/media-keys/ > "$REPO/gnome/media-keys.dconf"
+gsettings get org.gnome.shell enabled-extensions \
+  | tr ',' '\\n' | grep -oP "[\\w@\\.-]+" | sort > "$REPO/gnome/extensions.txt"
+
+echo "Snapshotting package lists..."
+# Flatpaks
+flatpak list --app --columns=application | sort > "$REPO/system/flatpaks.txt"
+
+echo "✅  Snapshot complete — review changes then git commit"
+"""

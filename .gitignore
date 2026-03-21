@@ -1,0 +1,41 @@
+# Secrets — never commit
+home/.bashrc.secrets
+home/.bashrc.secrets.*
+!home/.bashrc.secrets.template
+
+# SSH keys
+home/.ssh/
+home/.gnupg/
+
+# Browser data
+home/.config/google-chrome/
+home/.config/chromium/
+home/.mozilla/
+
+# IDE / editor caches
+home/.vscode/
+home/.vscode-insiders/
+home/.code-insiders/
+
+# Claude / AI tool caches & credentials
+home/.claude/
+home/.claude.json
+home/.opencode/
+
+# Caches
+home/.cache/
+home/.local/share/
+
+# Runtime / session files
+home/.config/dconf/
+home/.config/gnome-session/
+
+# Temporary / backup files
+*.dotbak
+*.bak
+*.tmp
+*~
+
+# OS files
+.DS_Store
+Thumbs.db

@@ -1,0 +1,14 @@
+# ~/.config/mise/config.toml — global mise tools
+# Managed by dotfiles (~/dotfiles)
+# Docs: https://mise.jdx.dev/
+
+[tools]
+bat    = "latest"
+eza    = "latest"
+fzf    = "latest"
+go     = "latest"
+node   = "22"
+tmux   = "latest"
+usage  = "latest"
+zellij = "latest"
+uv     = "latest"

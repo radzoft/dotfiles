@@ -1,0 +1,97 @@
+# DNF packages — curated list (repos added by install-packages.sh)
+# Last snapshot: Fedora 42
+
+# ── Shell & CLI ───────────────────────────────────────────────────────────────
+bash
+bash-completion
+stow
+git
+git-delta
+gh
+curl
+wget2-wget
+fzf
+ripgrep
+fd-find
+bc
+jq
+htop
+btop
+inotify-tools
+lsof
+tree
+unzip
+zip
+
+# ── Terminal ──────────────────────────────────────────────────────────────────
+ghostty
+
+# ── Editors & IDEs ────────────────────────────────────────────────────────────
+code
+code-insiders
+
+# ── Container & Virtualisation ────────────────────────────────────────────────
+docker-ce
+docker-ce-cli
+containerd.io
+docker-buildx-plugin
+docker-compose-plugin
+podman
+distrobox
+virt-manager
+libvirt
+
+# ── GNOME Desktop ─────────────────────────────────────────────────────────────
+gnome-tweaks
+dconf-editor
+gnome-pomodoro
+easyeffects
+flameshot
+gnome-browser-connector
+gnome-shell-extension-background-logo
+
+# ── Network & Security ────────────────────────────────────────────────────────
+tailscale
+cloudflared
+wireguard-tools
+nmap-ncat
+openssh-clients
+
+# ── Python (pyenv deps) ───────────────────────────────────────────────────────
+python3-pyserial
+bzip2-devel
+libffi-devel
+openssl-devel
+readline-devel
+sqlite-devel
+tk-devel
+xz-devel
+zlib-ng-compat-devel
+
+# ── Dev libraries ─────────────────────────────────────────────────────────────
+gcc
+make
+
+# ── Filesystem ────────────────────────────────────────────────────────────────
+btrfs-progs
+btrfs-assistant
+snapper
+
+# ── Productivity ─────────────────────────────────────────────────────────────
+libreoffice-writer
+
+# ── Media ─────────────────────────────────────────────────────────────────────
+pipewire-utils
+pipewire-alsa
+pipewire-pulseaudio
+
+# ── Drivers & Firmware ────────────────────────────────────────────────────────
+amd-gpu-firmware
+amd-ucode-firmware
+
+# ── Proprietary / Third-party (repos added separately) ───────────────────────
+# slack                  # add slack repo: https://slack.com/intl/en-gb/downloads/linux
+# zoom                   # add zoom repo: https://zoom.us/download
+# wps-office             # add wps repo
+# rustdesk               # https://github.com/rustdesk/rustdesk/releases
+# pgadmin4-desktop       # https://www.pgadmin.org/download/pgadmin-4-rpm/

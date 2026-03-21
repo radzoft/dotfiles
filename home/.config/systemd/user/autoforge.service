@@ -1,0 +1,14 @@
+[Unit]
+Description=Autoforge Service
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=%h/.volta/bin/autoforge
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target

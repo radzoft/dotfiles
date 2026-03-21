@@ -1,0 +1,39 @@
+[user]
+	email = glen@seansoftinc.com
+	name = glen
+	signingkey = BC87518DE1F9C71D529ACE15281DF1B52DF12B00
+
+[credential "https://github.com"]
+	helper = 
+	helper = !/usr/bin/gh auth git-credential
+
+[credential "https://gist.github.com"]
+	helper = 
+	helper = !/usr/bin/gh auth git-credential
+
+[credential]
+	helper = store
+
+[core]
+	editor = code --wait
+	pager = delta
+
+[alias]
+	undo = reset --soft HEAD^
+
+[delta]
+	line-numbers = true
+
+[log]
+	number = 20
+
+[pager]
+	log = true
+	diff = true
+	show = true
+
+[init]
+	defaultBranch = main
+
+[includeIf "gitdir:~/radzoft/"]
+	path = ~/radzoft/.gitconfig
