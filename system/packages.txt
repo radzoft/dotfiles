@@ -62,6 +62,10 @@ openssh-clients
 gcc
 make
 
+# ── DKMS (required for it87 out-of-tree kernel module) ───────────────────────
+dkms
+kernel-devel
+
 # ── Filesystem ────────────────────────────────────────────────────────────────
 btrfs-progs
 btrfs-assistant

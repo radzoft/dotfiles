@@ -60,6 +60,22 @@ Some extensions may not yet support GNOME 48 (Fedora 43). Options:
 PaperWM tracks GNOME releases closely. Check:
 https://github.com/paperwm/PaperWM/releases
 
+## it87 hardware monitor driver
+
+The it87 driver is installed via DKMS (`AUTOINSTALL=yes`), so it **rebuilds
+automatically** when a new kernel is installed — including after a Fedora upgrade.
+
+If it fails to load after the upgrade:
+```bash
+dkms status it87                         # check registration
+sudo dkms autoinstall                    # force rebuild for current kernel
+sudo modprobe it87                       # load the module
+
+# If the DKMS entry is broken, reinstall from source
+cd ~/oss/it87 && git pull
+sudo bash dkms-install.sh
+```
+
 ## If the TTGO service breaks
 
 The service now uses `uv run` — no Python version is hardcoded.

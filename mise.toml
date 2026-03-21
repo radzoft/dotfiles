@@ -10,7 +10,7 @@ usage = "latest"
 
 [tasks.bootstrap]
 description = "Full workstation bootstrap (run once on fresh install)"
-depends = ["packages", "link", "tools", "bun-globals", "gnome", "services", "udev"]
+depends = ["packages", "link", "tools", "bun-globals", "gnome", "services", "udev", "it87"]
 run = """
 echo ""
 echo "✅  Bootstrap complete!"
@@ -125,6 +125,39 @@ for svc in mic-ttgo autoforge; do
   fi
 done
 echo "✅  Services enabled"
+"""
+
+[tasks.it87]
+description = "Install it87 hwmon driver via DKMS (requires sudo)"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+
+IT87_DIR="$HOME/oss/it87"
+IT87_REPO="https://github.com/frankcrawford/it87.git"
+
+# Clone if not present
+if [[ ! -d "$IT87_DIR" ]]; then
+  echo "Cloning it87 driver..."
+  mkdir -p "$HOME/oss"
+  git clone "$IT87_REPO" "$IT87_DIR"
+else
+  echo "it87 source found at $IT87_DIR — pulling latest..."
+  git -C "$IT87_DIR" pull
+fi
+
+# Check if this version is already registered with DKMS
+VERSION=$(git -C "$IT87_DIR" describe --long).$(date -u -d "$(git -C "$IT87_DIR" show -s --format=%ci HEAD)" +%Y%m%d)
+if dkms status it87 2>/dev/null | grep -q "installed"; then
+  echo "it87 already installed in DKMS:"
+  dkms status it87
+else
+  echo "Installing it87 via DKMS..."
+  cd "$IT87_DIR"
+  sudo bash dkms-install.sh
+fi
+
+echo "✅  it87 driver installed (DKMS will auto-rebuild on kernel updates)"
 """
 
 [tasks.udev]
