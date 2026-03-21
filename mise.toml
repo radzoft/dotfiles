@@ -23,7 +23,7 @@ description = "Symlink dotfiles via stow (home/ → ~/)"
 run = """
 #!/usr/bin/env bash
 set -euo pipefail
-cd "$(dirname "$MISE_TOML_PATH")"
+cd "$MISE_PROJECT_ROOT"
 
 # Backup any conflicting files before stow
 backup_if_exists() {
@@ -165,7 +165,7 @@ description = "Install udev rules (requires sudo)"
 run = """
 #!/usr/bin/env bash
 set -euo pipefail
-RULES_DIR="$(dirname "$MISE_TOML_PATH")/system/udev"
+RULES_DIR="$MISE_PROJECT_ROOT/system/udev"
 echo "Installing udev rules from $RULES_DIR"
 sudo cp "$RULES_DIR"/*.rules /etc/udev/rules.d/
 sudo udevadm control --reload-rules
@@ -195,7 +195,7 @@ description = "Snapshot current GNOME settings + package lists into repo"
 run = """
 #!/usr/bin/env bash
 set -euo pipefail
-REPO="$(dirname "$MISE_TOML_PATH")"
+REPO="$MISE_PROJECT_ROOT"
 
 echo "Snapshotting GNOME settings..."
 dconf dump /org/gnome/shell/extensions/paperwm/ > "$REPO/gnome/paperwm.dconf"
@@ -206,7 +206,14 @@ gsettings get org.gnome.shell enabled-extensions \
 
 echo "Snapshotting qpwgraph..."
 cp "$HOME/.config/rncbc.org/qpwgraph.conf" "$REPO/home/.config/rncbc.org/qpwgraph.conf"
-cp "$HOME/.config/rncbc.org/patch.qpwgraph" "$REPO/home/.config/rncbc.org/patch.qpwgraph"
+# patchbay may still be at ~/Documents until 'mise run link' moves it
+if [[ -f "$HOME/.config/rncbc.org/patch.qpwgraph" ]]; then
+  cp "$HOME/.config/rncbc.org/patch.qpwgraph" "$REPO/home/.config/rncbc.org/patch.qpwgraph"
+elif [[ -f "$HOME/Documents/patch.qpwgraph" ]]; then
+  cp "$HOME/Documents/patch.qpwgraph" "$REPO/home/.config/rncbc.org/patch.qpwgraph"
+else
+  echo "  ⚠ patch.qpwgraph not found — skipping"
+fi
 
 echo "Snapshotting package lists..."
 # Flatpaks
