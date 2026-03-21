@@ -1,9 +1,5 @@
-com.autoclaude.ui
 com.mattjakeman.ExtensionManager
 com.spotify.Client
-com.toolstack.Folio
-dev.zed.Zed
 io.missioncenter.MissionCenter
 net.nokyan.Resources
 org.gimp.GIMP
-org.pipewire.Helvum
