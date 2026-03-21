@@ -1,0 +1,162 @@
+<!DOCTYPE patchbay>
+<patchbay name="patch" version="0.9.7">
+ <items>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Noise Reduction" port="rnnoise:output_FR"/>
+   <input node="Noise Reduction-1" port="rnnoise:input_FR"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Output Level Meter" port="output_level:output_FR"/>
+   <input node="UGREEN Studio Pro" port="UGREEN Studio Pro:playback_FR"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Google Chrome" port="Google Chrome:output_FL"/>
+   <input node="Output Level Meter" port="output_level:input_FL"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Autogain" port="autogain:output_FL"/>
+   <input node="Output Level Meter" port="output_level:input_FL"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Easy Effects Source" port="Easy Effects Source:capture_FR"/>
+   <input node="ZOOM VoiceEngine" port="ZOOM VoiceEngine:input_FR"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="fifine Microphone Analog Stereo" port="fifine Microphone:capture_FR"/>
+   <input node="Noise Reduction" port="rnnoise:input_FR"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Easy Effects Sink" port="Easy Effects Sink:monitor_FR"/>
+   <input node="Autogain" port="autogain:input_FR"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Noise Reduction-1" port="rnnoise:output_FL"/>
+   <input node="Spectrum-1" port="spectrum:input_FL"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Spectrum-1" port="spectrum:output_FL"/>
+   <input node="Output Level Meter-1" port="output_level:input_FL"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Output Level Meter" port="output_level:output_FL"/>
+   <input node="JamesDSP Sink" port="JamesDSP Sink:playback_FL"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="ZOOM VoiceEngine" port="ZOOM VoiceEngine:output_FR"/>
+   <input node="Easy Effects Sink" port="Easy Effects Sink:playback_FR"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="JamesDSP Sink" port="JamesDSP Sink:monitor_FL"/>
+   <input node="jamesdsp_filter" port="JamesDsp:input_FL"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Noise Reduction-1" port="rnnoise:output_FR"/>
+   <input node="Spectrum-1" port="spectrum:input_FR"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="spotify" port="spotify:output_FR"/>
+   <input node="Family 17h/19h/1ah HD Audio Controller Analog Stereo" port="ALC897 Analog:playback_FR"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Output Level Meter" port="output_level:output_FR"/>
+   <input node="JamesDSP Sink" port="JamesDSP Sink:playback_FR"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Videos" port="Videos:output_FR"/>
+   <input node="Easy Effects Sink" port="Easy Effects Sink:playback_FR"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Pomodoro" port="Pomodoro:output_FL"/>
+   <input node="fifine Microphone Analog Stereo" port="fifine Microphone:playback_FR"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Google Chrome" port="Google Chrome:output_FR"/>
+   <input node="Output Level Meter" port="output_level:input_FR"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Noise Reduction" port="rnnoise:output_FL"/>
+   <input node="Noise Reduction-1" port="rnnoise:input_FL"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Output Level Meter-1" port="output_level:output_FR"/>
+   <input node="Easy Effects Source" port="Easy Effects Source:input_FR"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Autogain" port="autogain:output_FL"/>
+   <input node="Spectrum" port="spectrum:input_FL"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Spectrum-1" port="spectrum:output_FR"/>
+   <input node="Output Level Meter-1" port="output_level:input_FR"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Mutter" port="Mutter:output_FL"/>
+   <input node="Easy Effects Sink" port="Easy Effects Sink:playback_FL"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Output Level Meter" port="output_level:output_FL"/>
+   <input node="UGREEN Studio Pro" port="UGREEN Studio Pro:playback_FL"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Videos" port="Videos:output_FL"/>
+   <input node="Easy Effects Sink" port="Easy Effects Sink:playback_FL"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="jamesdsp_filter" port="JamesDsp:output_FR"/>
+   <input node="Easy Effects Sink" port="Easy Effects Sink:playback_FR"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Easy Effects Source" port="Easy Effects Source:capture_FL"/>
+   <input node="ZOOM VoiceEngine" port="ZOOM VoiceEngine:input_FL"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Pomodoro" port="Pomodoro:output_FR"/>
+   <input node="fifine Microphone Analog Stereo" port="fifine Microphone:playback_FL"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="fifine Microphone Analog Stereo" port="fifine Microphone:capture_FL"/>
+   <input node="Noise Reduction" port="rnnoise:input_FL"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Autogain" port="autogain:output_FR"/>
+   <input node="Spectrum" port="spectrum:input_FR"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="ZOOM VoiceEngine" port="ZOOM VoiceEngine:output_FL"/>
+   <input node="Easy Effects Sink" port="Easy Effects Sink:playback_FL"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Easy Effects Sink" port="Easy Effects Sink:monitor_FL"/>
+   <input node="Autogain" port="autogain:input_FL"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Output Level Meter-1" port="output_level:output_FL"/>
+   <input node="Easy Effects Source" port="Easy Effects Source:input_FL"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="Autogain" port="autogain:output_FR"/>
+   <input node="Output Level Meter" port="output_level:input_FR"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="spotify" port="spotify:output_FL"/>
+   <input node="Family 17h/19h/1ah HD Audio Controller Analog Stereo" port="ALC897 Analog:playback_FL"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="spotify" port="spotify:output_FR"/>
+   <input node="Easy Effects Sink" port="Easy Effects Sink:playback_FR"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="JamesDSP Sink" port="JamesDSP Sink:monitor_FR"/>
+   <input node="jamesdsp_filter" port="JamesDsp:input_FR"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="jamesdsp_filter" port="JamesDsp:output_FL"/>
+   <input node="Easy Effects Sink" port="Easy Effects Sink:playback_FL"/>
+  </item>
+  <item node-type="pipewire" port-type="pipewire-audio">
+   <output node="spotify" port="spotify:output_FL"/>
+   <input node="Easy Effects Sink" port="Easy Effects Sink:playback_FL"/>
+  </item>
+ </items>
+</patchbay>
+

@@ -204,6 +204,10 @@ dconf dump /org/gnome/settings-daemon/plugins/media-keys/ > "$REPO/gnome/media-k
 gsettings get org.gnome.shell enabled-extensions \
   | tr ',' '\\n' | grep -oP "[\\w@\\.-]+" | sort > "$REPO/gnome/extensions.txt"
 
+echo "Snapshotting qpwgraph..."
+cp "$HOME/.config/rncbc.org/qpwgraph.conf" "$REPO/home/.config/rncbc.org/qpwgraph.conf"
+cp "$HOME/.config/rncbc.org/patch.qpwgraph" "$REPO/home/.config/rncbc.org/patch.qpwgraph"
+
 echo "Snapshotting package lists..."
 # Flatpaks
 flatpak list --app --columns=application | sort > "$REPO/system/flatpaks.txt"
