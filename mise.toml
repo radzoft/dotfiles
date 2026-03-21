@@ -11,6 +11,7 @@ usage = "latest"
 [tasks.bootstrap]
 description = "Full workstation bootstrap (run once on fresh install)"
 depends = ["packages", "link", "tools", "bun-globals", "gnome", "services", "udev", "it87"]
+# Note: autoforge removed — was a volta/bun global, no longer needed
 run = """
 echo ""
 echo "✅  Bootstrap complete!"
@@ -88,7 +89,6 @@ echo "Installing global bun packages..."
 packages=(
   "@anthropic-ai/claude-code"   # claude CLI
   "@mariozechner/pi-coding-agent"  # pi coding agent
-  "autoforge-ai"                # autoforge
   "opencode-ai"                 # opencode
   "@devcontainers/cli"          # devcontainer
   "agent-browser"               # browser automation
@@ -116,7 +116,7 @@ run = """
 #!/usr/bin/env bash
 set -euo pipefail
 systemctl --user daemon-reload
-for svc in mic-ttgo autoforge; do
+for svc in mic-ttgo; do
   if systemctl --user list-unit-files "${svc}.service" &>/dev/null; then
     echo "Enabling $svc.service"
     systemctl --user enable --now "${svc}.service" || echo "  (skipped — check service file)"
