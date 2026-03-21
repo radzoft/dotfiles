@@ -10,7 +10,7 @@ usage = "latest"
 
 [tasks.bootstrap]
 description = "Full workstation bootstrap (run once on fresh install)"
-depends = ["packages", "link", "tools", "gnome", "services", "udev"]
+depends = ["packages", "link", "tools", "bun-globals", "gnome", "services", "udev"]
 run = """
 echo ""
 echo "✅  Bootstrap complete!"
@@ -53,12 +53,41 @@ description = "Install Flatpak apps from system/flatpaks.txt"
 run = "./scripts/install-flatpaks.sh"
 
 [tasks.tools]
-description = "Install mise-managed tools (bat, eza, fzf, go, node, tmux, zellij…)"
+description = "Install mise-managed tools (bun, gh, delta, ripgrep, node, go…)"
 run = """
 #!/usr/bin/env bash
 # Install tools from the global mise config (symlinked via stow)
 mise install --config "$HOME/.config/mise/config.toml"
 echo "✅  Mise tools installed"
+"""
+
+[tasks.bun-globals]
+description = "Install global JS tools via bun (claude, pi, autoforge, opencode…)"
+depends = ["tools"]   # bun must be installed by mise first
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+
+BUN="${MISE_DATA_DIR:-$HOME/.local/share/mise}/shims/bun"
+# Fall back to PATH bun if shim not found
+command -v "$BUN" &>/dev/null || BUN="bun"
+
+echo "Installing global bun packages..."
+packages=(
+  "@anthropic-ai/claude-code"   # claude CLI
+  "@mariozechner/pi-coding-agent"  # pi coding agent
+  "autoforge-ai"                # autoforge
+  "opencode-ai"                 # opencode
+  "@devcontainers/cli"          # devcontainer
+  "agent-browser"               # browser automation
+)
+
+for pkg in "${packages[@]}"; do
+  echo "  → $pkg"
+  "$BUN" add -g "$pkg"
+done
+
+echo "✅  Bun global packages installed (in ~/.bun/bin/)"
 """
 
 [tasks.gnome]

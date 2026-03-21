@@ -49,11 +49,7 @@ export PYENV_ROOT="$HOME/.pyenv"
 [[ -d "$PYENV_ROOT/bin" ]] && export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init - bash 2>/dev/null || true)"
 
-# ── Volta ─────────────────────────────────────────────────────────────────────
-export VOLTA_HOME="$HOME/.volta"
-export PATH="$VOLTA_HOME/bin:$PATH"
-
-# ── Bun ───────────────────────────────────────────────────────────────────────
+# ── Bun globals (bun version managed by mise; globals installed via bun add -g) ──
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 

@@ -2,19 +2,15 @@
 # Last snapshot: Fedora 42
 
 # ── Shell & CLI ───────────────────────────────────────────────────────────────
+# Note: gh, git-delta, fzf, ripgrep, fd, jq, yq, zoxide, lazygit → managed by mise
+# Note: bun, node, go, uv → managed by mise
 bash
 bash-completion
 stow
 git
-git-delta
-gh
 curl
 wget2-wget
-fzf
-ripgrep
-fd-find
 bc
-jq
 htop
 btop
 inotify-tools
@@ -51,6 +47,7 @@ gnome-browser-connector
 gnome-shell-extension-background-logo
 
 # ── Network & Security ────────────────────────────────────────────────────────
+# Note: cloudflared runs as a system service — keep in DNF
 tailscale
 cloudflared
 wireguard-tools
