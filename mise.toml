@@ -134,7 +134,7 @@ run = """
 set -euo pipefail
 
 IT87_DIR="$HOME/oss/it87"
-IT87_REPO="https://github.com/frankcrawford/it87.git"
+IT87_REPO="https://github.com/radzoft/it87.git"
 
 # Clone if not present
 if [[ ! -d "$IT87_DIR" ]]; then
