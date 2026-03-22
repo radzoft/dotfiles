@@ -89,6 +89,9 @@ cd ~/dotfiles
 mise run bootstrap
 ```
 
+> `bootstrap` runs `dnf update` first before installing packages, so the
+> system is fully current before repos and dependencies are added.
+
 ---
 
 ### Step 5 — Post-bootstrap checks

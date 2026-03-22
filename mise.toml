@@ -10,7 +10,7 @@ usage = "latest"
 
 [tasks.bootstrap]
 description = "Full workstation bootstrap (run once on fresh install)"
-depends = ["packages", "link", "tools", "bun-globals", "gnome", "extensions", "services", "udev", "it87"]
+depends = ["update", "packages", "link", "tools", "bun-globals", "gnome", "extensions", "services", "udev", "it87"]
 # Note: autoforge removed — was a volta/bun global, no longer needed
 run = """
 echo ""
@@ -58,8 +58,19 @@ fi
 echo "✅  Dotfiles linked"
 """
 
+[tasks.update]
+description = "Upgrade all system packages (dnf update)"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+echo "→ Updating system packages..."
+sudo dnf update -y
+echo "✅  System up to date"
+"""
+
 [tasks.packages]
 description = "Install DNF packages from system/packages.txt"
+depends = ["update"]   # repos/deps must be current before adding new packages
 run = "./scripts/install-packages.sh"
 
 [tasks.flatpaks]
