@@ -97,16 +97,91 @@ systemctl --user daemon-reload && systemctl --user restart mic-ttgo.service
 
 ## Fresh install (new machine or reinstall)
 
+### Step 1 — Anaconda partitioning
+
+When the installer reaches **Installation Destination → Custom storage**, set up
+the partitions manually. Use these exact subvolume names — `setup-btrfs.sh` (step 3)
+expects them and will create anything that's missing.
+
+| Partition | Size | Format | Mount |
+|-----------|------|--------|-------|
+| EFI System Partition | 1 GB | FAT32 | `/boot/efi` |
+| Main partition | rest of disk | btrfs (label: `radzoft`) | — |
+
+**btrfs subvolumes to create in Anaconda** (these are the ones the installer UI supports):
+
+| Subvol name | Mount point |
+|-------------|-------------|
+| `root`  | `/` |
+| `home`  | `/home` |
+| `opt`   | `/opt` |
+| `log`   | `/var/log` |
+| `tmp`   | `/var/tmp` |
+| `cache` | `/var/cache` |
+| `gdm`   | `/var/lib/gdm` |
+
+> Anaconda doesn't support `nodatacow` or `compress=zstd` options via the UI —
+> leave mount options at defaults. `setup-btrfs.sh` rewrites `/etc/fstab` with
+> the correct options after install.
+
+Do **not** create a swap partition — the system uses zram (configured automatically by Fedora).
+
+---
+
+### Step 2 — First boot: clone dotfiles
+
 ```bash
-# 1. Install minimal deps
+# Install minimal deps
 sudo dnf install -y git stow curl
 
-# 2. Install mise
+# Install mise
 curl https://mise.run | sh
 export PATH="$HOME/.local/bin:$PATH"
 
-# 3. Clone and bootstrap
+# Clone dotfiles
 git clone git@github.com:glen/dotfiles.git ~/dotfiles
+```
+
+---
+
+### Step 3 — btrfs post-install setup (requires sudo)
+
+This script creates the subvolumes Anaconda doesn't handle, rewrites `/etc/fstab`
+with `compress=zstd:1`, `noatime`, and `nodatacow` where appropriate, and
+configures snapper + grub-btrfs.
+
+```bash
 cd ~/dotfiles
-bash scripts/bootstrap.sh
+sudo bash scripts/setup-btrfs.sh
+```
+
+What it creates:
+
+| Subvol | Mount point | Options |
+|--------|-------------|---------|
+| `snapshots`      | `/.snapshots`                        | — |
+| `containers`     | `~/.local/share/containers`          | nodatacow |
+| `docker`         | `/var/lib/docker`                    | nodatacow |
+| `libvirt`        | `/var/lib/libvirt`                   | compress=zstd:1 |
+| `libvirt-images` | `/var/lib/libvirt/images`            | nodatacow |
+| `flatpak`        | `/var/lib/flatpak`                   | compress=zstd:1 |
+| `downloads`      | `~/Downloads`                        | compress=zstd:3 |
+
+After it completes:
+
+```bash
+sudo reboot
+
+# Verify after reboot
+findmnt --type btrfs
+btrfs subvolume list /
+```
+
+---
+
+### Step 4 — Bootstrap
+
+```bash
+cd ~/dotfiles
+mise run bootstrap
 ```

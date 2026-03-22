@@ -160,6 +160,10 @@ fi
 echo "✅  it87 driver installed (DKMS will auto-rebuild on kernel updates)"
 """
 
+[tasks.btrfs-setup]
+description = "Post-install btrfs subvolume setup (run once after fresh install, before bootstrap)"
+run = "sudo bash $MISE_PROJECT_ROOT/scripts/setup-btrfs.sh"
+
 [tasks.udev]
 description = "Install udev rules (requires sudo)"
 run = """
