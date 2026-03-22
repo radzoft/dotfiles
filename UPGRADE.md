@@ -33,7 +33,7 @@ Do **not** create a swap partition — Fedora uses zram automatically.
 
 ---
 
-### Step 2 — First boot: clone dotfiles
+### Step 2 — First boot: clone dotfiles + install pi
 
 ```bash
 sudo dnf install -y git stow curl
@@ -42,7 +42,17 @@ curl https://mise.run | sh
 export PATH="$HOME/.local/bin:$PATH"
 
 git clone git@github.com:glen/dotfiles.git ~/dotfiles
+
+# Install bun + pi so Claude can assist with the rest of setup
+mise install bun
+mise exec bun -- bun add -g @mariozechner/pi-coding-agent
+export PATH="$HOME/.bun/bin:$PATH"
+
+# Now start pi and let Claude guide you through steps 3 → 4
+pi
 ```
+
+> From here you can ask Claude to walk you through btrfs setup and bootstrap.
 
 ---
 
