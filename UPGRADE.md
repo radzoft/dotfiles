@@ -43,10 +43,9 @@ export PATH="$HOME/.local/bin:$PATH"
 
 git clone git@github.com:glen/dotfiles.git ~/dotfiles
 
-# Install bun + pi so Claude can assist with the rest of setup
-mise install bun
-mise exec bun -- bun add -g @mariozechner/pi-coding-agent
-export PATH="$HOME/.bun/bin:$PATH"
+# Install pi via mise so Claude can assist with the rest of setup
+mise use -g npm:@mariozechner/pi-coding-agent
+export PATH="$HOME/.local/share/mise/shims:$PATH"
 
 # Now start pi and let Claude guide you through steps 3 → 4
 pi
