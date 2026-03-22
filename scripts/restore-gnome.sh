@@ -6,9 +6,9 @@ GNOME_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../gnome" && pwd)"
 
 echo "Restoring GNOME settings..."
 
-# ── PaperWM ────────────────────────────────────────────────────────────────
-echo "  → PaperWM settings"
-dconf load /org/gnome/shell/extensions/paperwm/ < "$GNOME_DIR/paperwm.dconf"
+# ── All extension settings ────────────────────────────────────────────────
+echo "  → Extension settings"
+dconf load /org/gnome/shell/extensions/ < "$GNOME_DIR/extensions.dconf"
 
 # ── WM keybindings ────────────────────────────────────────────────────────
 echo "  → WM keybindings"

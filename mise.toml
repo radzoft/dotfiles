@@ -218,7 +218,7 @@ set -euo pipefail
 REPO="$MISE_PROJECT_ROOT"
 
 echo "Snapshotting GNOME settings..."
-dconf dump /org/gnome/shell/extensions/paperwm/ > "$REPO/gnome/paperwm.dconf"
+dconf dump /org/gnome/shell/extensions/         > "$REPO/gnome/extensions.dconf"
 dconf dump /org/gnome/desktop/wm/keybindings/   > "$REPO/gnome/wm-keybindings.dconf"
 dconf dump /org/gnome/settings-daemon/plugins/media-keys/ > "$REPO/gnome/media-keys.dconf"
 gsettings get org.gnome.shell enabled-extensions \

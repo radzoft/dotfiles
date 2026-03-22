@@ -1,4 +1,33 @@
-[/]
+[blur-my-shell]
+settings-version=2
+
+[blur-my-shell/appfolder]
+brightness=0.59999999999999998
+sigma=30
+
+[blur-my-shell/dash-to-dock]
+blur=true
+brightness=0.59999999999999998
+sigma=30
+static-blur=true
+style-dash-to-dock=0
+
+[blur-my-shell/panel]
+brightness=0.59999999999999998
+sigma=30
+
+[blur-my-shell/window-list]
+brightness=0.59999999999999998
+sigma=30
+
+[caffeine]
+cli-toggle=false
+indicator-position-max=2
+
+[lilypad]
+rightbox-order=['lilypad', 'gnome_wireguard_extension', 'drive_menu', 'ddterm', 'Clipboard_History_Indicator', 'memento_mori', 'text_scaler_button', 'TopHat', 'tracker', 'vitalsMenu']
+
+[paperwm]
 animation-time=0.19999999999999996
 cycle-width-steps=[0.20000000000000001, 0.25, 0.38195000000000001, 0.5, 0.61804000000000003, 0.75, 0.80000000000000004]
 default-focus-mode=0
@@ -33,7 +62,7 @@ vertical-margin-bottom=0
 window-gap=0
 winprops=['{"wm_class":"org.gnome.Calculator","scratch_layer":true}']
 
-[keybindings]
+[paperwm/keybindings]
 center=['<Super>c']
 center-horizontally=['']
 center-vertically=['']
@@ -49,47 +78,56 @@ switch-last=['']
 switch-up=['']
 switch-up-workspace=['']
 
-[workspaces]
+[paperwm/workspaces]
 list=['3e83acc5-f237-4414-85f5-5c6aa303cdd1', '8493ae27-ee7c-417f-8112-c6faf28ac8ff', 'a83e7995-5f1d-4fa7-ba97-42e412221177', '37e0ccd5-7eeb-43f6-8cd7-b61c8577fbb9']
 
-[workspaces/37e0ccd5-7eeb-43f6-8cd7-b61c8577fbb9]
+[paperwm/workspaces/37e0ccd5-7eeb-43f6-8cd7-b61c8577fbb9]
 background=''
 color='rgb(32,33,33)'
 index=3
 show-position-bar=false
 show-top-bar=true
 
-[workspaces/3e83acc5-f237-4414-85f5-5c6aa303cdd1]
+[paperwm/workspaces/3e83acc5-f237-4414-85f5-5c6aa303cdd1]
 background=''
 color='rgb(33,33,33)'
 index=0
 show-position-bar=false
 
-[workspaces/67066578-2c81-4661-af64-73c0c85f886c]
+[paperwm/workspaces/67066578-2c81-4661-af64-73c0c85f886c]
 index=1
 
-[workspaces/7104051e-1f8a-4bb8-ba3c-be371e88ecb0]
+[paperwm/workspaces/7104051e-1f8a-4bb8-ba3c-be371e88ecb0]
 index=0
 
-[workspaces/8493ae27-ee7c-417f-8112-c6faf28ac8ff]
+[paperwm/workspaces/8493ae27-ee7c-417f-8112-c6faf28ac8ff]
 background=''
 color='rgb(33,33,33)'
 index=1
 show-position-bar=false
 show-top-bar=true
 
-[workspaces/8c2dfa16-d7e2-4193-bba0-6afeb4f0cd18]
+[paperwm/workspaces/8c2dfa16-d7e2-4193-bba0-6afeb4f0cd18]
 index=0
 
-[workspaces/98c9caa1-7bba-493d-8319-b31dbe8c7246]
+[paperwm/workspaces/98c9caa1-7bba-493d-8319-b31dbe8c7246]
 index=1
 
-[workspaces/a83e7995-5f1d-4fa7-ba97-42e412221177]
+[paperwm/workspaces/a83e7995-5f1d-4fa7-ba97-42e412221177]
 background=''
 color='rgb(33,33,33)'
 index=2
 show-position-bar=false
 show-top-bar=true
 
-[workspaces/adace82d-5916-4dfc-837d-442d02d6e8e2]
+[paperwm/workspaces/adace82d-5916-4dfc-837d-442d02d6e8e2]
 index=2
+
+[tophat]
+mount-to-monitor='/'
+
+[tracker]
+timers=['{"id":"settings","totalTimeSelected":true}']
+
+[world-clock]
+active-buttons=@as []
