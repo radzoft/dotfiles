@@ -39,6 +39,7 @@ backup_if_exists .bashrc
 backup_if_exists .bash_profile
 backup_if_exists .gitconfig
 backup_if_exists .zshrc
+backup_if_exists .config/mise/config.toml
 
 echo "Symlinking dotfiles (stow home/ → ~/)"
 stow --dir="$(pwd)" --target="$HOME" --restow home
@@ -67,10 +68,11 @@ run = "./scripts/install-flatpaks.sh"
 
 [tasks.tools]
 description = "Install mise-managed tools (bun, gh, delta, ripgrep, node, go…)"
+depends = ["link"]   # ~/.config/mise/config.toml must be symlinked first
 run = """
 #!/usr/bin/env bash
-# Install tools from the global mise config (symlinked via stow)
-mise install --config "$HOME/.config/mise/config.toml"
+# mise install reads ~/.config/mise/config.toml automatically (--config flag removed in newer mise)
+mise install
 echo "✅  Mise tools installed"
 """
 
@@ -112,6 +114,7 @@ run = "./scripts/install-extensions.sh"
 
 [tasks.services]
 description = "Enable systemd user services (mic-ttgo, autoforge)"
+depends = ["link"]   # service unit files must be symlinked first
 run = """
 #!/usr/bin/env bash
 set -euo pipefail
@@ -129,6 +132,7 @@ echo "✅  Services enabled"
 
 [tasks.it87]
 description = "Install it87 hwmon driver via DKMS (requires sudo)"
+depends = ["packages"]   # needs gcc, make, dkms, kernel-devel from packages
 run = """
 #!/usr/bin/env bash
 set -euo pipefail
@@ -166,6 +170,7 @@ run = "sudo bash $MISE_PROJECT_ROOT/scripts/setup-btrfs.sh"
 
 [tasks.udev]
 description = "Install udev rules (requires sudo)"
+depends = ["packages"]   # avoids parallel sudo contention with packages task
 run = """
 #!/usr/bin/env bash
 set -euo pipefail

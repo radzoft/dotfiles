@@ -1,4 +1,5 @@
 com.mattjakeman.ExtensionManager
+com.mitchellh.ghostty
 com.spotify.Client
 io.missioncenter.MissionCenter
 net.nokyan.Resources

@@ -20,7 +20,7 @@ unzip
 zip
 
 # ── Terminal ──────────────────────────────────────────────────────────────────
-ghostty
+# ghostty → installed via flatpak (com.mitchellh.ghostty) — not in Fedora repos
 alacritty
 
 # ── Editors & IDEs ────────────────────────────────────────────────────────────
