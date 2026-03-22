@@ -1,101 +1,6 @@
-# Fedora 43 Upgrade Guide
+# Fedora Setup & Upgrade Guide
 
-## Before upgrading (on Fedora 42)
-
-```bash
-cd ~/dotfiles
-
-# 1. Snapshot current GNOME settings + package lists
-mise run snapshot
-git add -A && git commit -m "snapshot: pre-Fedora-43 upgrade"
-git push
-
-# 2. Note your current mise tools (in case mise needs reinstall)
-mise list
-
-# 3. Push dotfiles to remote
-git remote add origin git@github.com:glen/dotfiles.git
-git push -u origin main
-```
-
-## Perform the upgrade
-
-```bash
-# Standard Fedora system upgrade
-sudo dnf upgrade --refresh
-sudo dnf install dnf5-plugin-system-upgrade
-sudo dnf system-upgrade download --releasever=43
-sudo dnf system-upgrade reboot
-```
-
-## After upgrading (on Fedora 43)
-
-GNOME settings often survive the upgrade intact, but extensions will likely
-be **disabled** because GNOME Shell bumps its version. PaperWM in particular
-needs to be re-enabled after each major GNOME upgrade.
-
-```bash
-# 1. Re-enable extensions (they survive but may be disabled)
-gnome-extensions enable paperwm@paperwm.github.com
-# Or use Extension Manager (flatpak) to bulk-enable
-
-# 2. Restore keybindings + PaperWM settings (they survive in dconf, but reapply anyway)
-cd ~/dotfiles && mise run gnome
-
-# 3. Check if any packages need reinstall (3rd party repos may need updating)
-mise run packages   # idempotent, safe to re-run
-
-# 4. Restart mic-ttgo service (pyenv path may shift)
-systemctl --user restart mic-ttgo.service
-journalctl --user -u mic-ttgo.service -f   # check logs
-```
-
-## If GNOME extensions don't work after upgrade
-
-Some extensions may not yet support GNOME 48 (Fedora 43). Options:
-1. **Wait** for the extension author to update
-2. **Use Extension Manager** (flatpak) — it shows compatible versions
-3. **Install from git** for extensions you rely on (PaperWM publishes quickly)
-
-PaperWM tracks GNOME releases closely. Check:
-https://github.com/paperwm/PaperWM/releases
-
-## it87 hardware monitor driver
-
-The it87 driver is installed via DKMS (`AUTOINSTALL=yes`), so it **rebuilds
-automatically** when a new kernel is installed — including after a Fedora upgrade.
-
-If it fails to load after the upgrade:
-```bash
-dkms status it87                         # check registration
-sudo dkms autoinstall                    # force rebuild for current kernel
-sudo modprobe it87                       # load the module
-
-# If the DKMS entry is broken, reinstall from source
-cd ~/oss/it87 && git pull
-sudo bash dkms-install.sh
-```
-
-## If the TTGO service breaks
-
-The service now uses `uv run` — no Python version is hardcoded.
-`uv` reads the inline `pyserial` dependency from `ttgo2.py` and manages the venv automatically.
-
-```bash
-# Test the script directly
-uv run ~/apps/ttgo2.py
-
-# Check service logs
-journalctl --user -u mic-ttgo.service -f
-
-# If uv shim path changed (rare), update the service and relink
-cd ~/dotfiles
-# edit home/.config/systemd/user/mic-ttgo.service
-mise run link
-systemctl --user daemon-reload && systemctl --user restart mic-ttgo.service
-```
-
-## Fresh install (new machine or reinstall)
+## Fresh install (primary path)
 
 ### Step 1 — Anaconda partitioning
 
@@ -108,7 +13,7 @@ expects them and will create anything that's missing.
 | EFI System Partition | 1 GB | FAT32 | `/boot/efi` |
 | Main partition | rest of disk | btrfs (label: `radzoft`) | — |
 
-**btrfs subvolumes to create in Anaconda** (these are the ones the installer UI supports):
+**btrfs subvolumes to create in Anaconda:**
 
 | Subvol name | Mount point |
 |-------------|-------------|
@@ -120,25 +25,22 @@ expects them and will create anything that's missing.
 | `cache` | `/var/cache` |
 | `gdm`   | `/var/lib/gdm` |
 
-> Anaconda doesn't support `nodatacow` or `compress=zstd` options via the UI —
-> leave mount options at defaults. `setup-btrfs.sh` rewrites `/etc/fstab` with
-> the correct options after install.
+> Anaconda doesn't support `nodatacow` or `compress=zstd` via the UI — leave
+> mount options at defaults. `setup-btrfs.sh` rewrites `/etc/fstab` with the
+> correct options after install.
 
-Do **not** create a swap partition — the system uses zram (configured automatically by Fedora).
+Do **not** create a swap partition — Fedora uses zram automatically.
 
 ---
 
 ### Step 2 — First boot: clone dotfiles
 
 ```bash
-# Install minimal deps
 sudo dnf install -y git stow curl
 
-# Install mise
 curl https://mise.run | sh
 export PATH="$HOME/.local/bin:$PATH"
 
-# Clone dotfiles
 git clone git@github.com:glen/dotfiles.git ~/dotfiles
 ```
 
@@ -146,26 +48,27 @@ git clone git@github.com:glen/dotfiles.git ~/dotfiles
 
 ### Step 3 — btrfs post-install setup (requires sudo)
 
-This script creates the subvolumes Anaconda doesn't handle, rewrites `/etc/fstab`
-with `compress=zstd:1`, `noatime`, and `nodatacow` where appropriate, and
+Creates the subvolumes Anaconda doesn't handle, rewrites `/etc/fstab` with
+`compress=zstd:1`, `noatime`, and `nodatacow` where appropriate, and
 configures snapper + grub-btrfs.
 
 ```bash
 cd ~/dotfiles
 sudo bash scripts/setup-btrfs.sh
+# or: mise run btrfs-setup
 ```
 
-What it creates:
+**What it adds** (on top of what Anaconda created):
 
-| Subvol | Mount point | Options |
-|--------|-------------|---------|
-| `snapshots`      | `/.snapshots`                        | — |
-| `containers`     | `~/.local/share/containers`          | nodatacow |
-| `docker`         | `/var/lib/docker`                    | nodatacow |
-| `libvirt`        | `/var/lib/libvirt`                   | compress=zstd:1 |
-| `libvirt-images` | `/var/lib/libvirt/images`            | nodatacow |
-| `flatpak`        | `/var/lib/flatpak`                   | compress=zstd:1 |
-| `downloads`      | `~/Downloads`                        | compress=zstd:3 |
+| Subvol | Mount point | Notable option |
+|--------|-------------|----------------|
+| `snapshots`      | `/.snapshots`                     | — |
+| `containers`     | `~/.local/share/containers`       | nodatacow |
+| `docker`         | `/var/lib/docker`                 | nodatacow |
+| `libvirt`        | `/var/lib/libvirt`                | compress=zstd:1 |
+| `libvirt-images` | `/var/lib/libvirt/images`         | nodatacow |
+| `flatpak`        | `/var/lib/flatpak`                | compress=zstd:1 |
+| `downloads`      | `~/Downloads`                     | compress=zstd:3 |
 
 After it completes:
 
@@ -184,4 +87,109 @@ btrfs subvolume list /
 ```bash
 cd ~/dotfiles
 mise run bootstrap
+```
+
+---
+
+### Step 5 — Post-bootstrap checks
+
+```bash
+# Re-enable GNOME extensions (Shell version bump disables them)
+gnome-extensions enable paperwm@paperwm.github.com
+# or use Extension Manager (flatpak) to bulk-enable
+
+# Check mic-ttgo service
+systemctl --user status mic-ttgo.service
+journalctl --user -u mic-ttgo.service -f
+```
+
+---
+
+## In-place upgrade (F42 → F43)
+
+### Before upgrading
+
+```bash
+cd ~/dotfiles
+
+# Snapshot current GNOME settings + package lists
+mise run snapshot
+git add -A && git commit -m "snapshot: pre-Fedora-43 upgrade"
+git push
+
+# Note your current mise tools (in case mise needs reinstall)
+mise list
+```
+
+### Perform the upgrade
+
+```bash
+sudo dnf upgrade --refresh
+sudo dnf install dnf5-plugin-system-upgrade
+sudo dnf system-upgrade download --releasever=43
+sudo dnf system-upgrade reboot
+```
+
+### After upgrading
+
+GNOME settings often survive the upgrade intact, but extensions will likely
+be **disabled** because GNOME Shell bumps its version.
+
+```bash
+# 1. Re-enable extensions
+gnome-extensions enable paperwm@paperwm.github.com
+
+# 2. Reapply keybindings + PaperWM settings
+cd ~/dotfiles && mise run gnome
+
+# 3. Reinstall packages (3rd party repos may need updating)
+mise run packages
+
+# 4. Restart mic-ttgo service (pyenv path may shift)
+systemctl --user restart mic-ttgo.service
+journalctl --user -u mic-ttgo.service -f
+```
+
+---
+
+## Troubleshooting
+
+### GNOME extensions don't work after upgrade
+
+Some extensions may not yet support the new GNOME Shell version. Options:
+1. **Wait** for the extension author to update
+2. **Use Extension Manager** (flatpak) — shows compatible versions
+3. **Install from git** — PaperWM publishes quickly:
+   https://github.com/paperwm/PaperWM/releases
+
+### it87 hardware monitor driver
+
+The it87 driver is installed via DKMS (`AUTOINSTALL=yes`) and rebuilds
+automatically when a new kernel is installed.
+
+If it fails to load after an upgrade:
+```bash
+dkms status it87
+sudo dkms autoinstall
+sudo modprobe it87
+
+# If the DKMS entry is broken, reinstall from source
+cd ~/oss/it87 && git pull
+sudo bash dkms-install.sh
+```
+
+### mic-ttgo service breaks
+
+The service uses `uv run` — no Python version is hardcoded.
+
+```bash
+uv run ~/apps/ttgo2.py          # test directly
+
+journalctl --user -u mic-ttgo.service -f
+
+# If uv shim path changed (rare)
+cd ~/dotfiles
+# edit home/.config/systemd/user/mic-ttgo.service
+mise run link
+systemctl --user daemon-reload && systemctl --user restart mic-ttgo.service
 ```
