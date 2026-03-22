@@ -10,7 +10,7 @@ usage = "latest"
 
 [tasks.bootstrap]
 description = "Full workstation bootstrap (run once on fresh install)"
-depends = ["packages", "link", "tools", "bun-globals", "gnome", "services", "udev", "it87"]
+depends = ["packages", "link", "tools", "bun-globals", "gnome", "extensions", "services", "udev", "it87"]
 # Note: autoforge removed — was a volta/bun global, no longer needed
 run = """
 echo ""
