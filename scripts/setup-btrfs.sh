@@ -28,7 +28,7 @@ section "Detecting btrfs"
 FSTYPE=$(findmnt -n -o FSTYPE /)
 [[ "$FSTYPE" == "btrfs" ]] || die "Root filesystem is not btrfs (found: $FSTYPE)"
 
-BTRFS_DEV=$(findmnt -n -o SOURCE /)
+BTRFS_DEV=$(findmnt -n -o SOURCE / | sed 's/\[.*//')
 BTRFS_UUID=$(findmnt -n -o UUID /)
 [[ -n "$BTRFS_UUID" ]] || die "Could not detect btrfs UUID"
 
@@ -50,13 +50,15 @@ btrfs subvolume list "$MNTDIR" | awk '{printf "  id=%-5s  %s\n", $2, $NF}'
 section "Creating subvolumes"
 
 create_subvol() {
-  local name="$1" nocow="${2:-no}" path="$MNTDIR/$name"
+  local name="$1"
+  local nocow="${2:-no}"
+  local path="$MNTDIR/$name"
   if [[ -d "$path" ]]; then
     warn "  '$name' already exists — skipping"
-  else
-    btrfs subvolume create "$path"
-    info "  created: $name"
+    return
   fi
+  btrfs subvolume create "$path"
+  info "  created: $name"
   if [[ "$nocow" == "yes" ]]; then
     chattr +C "$path" 2>/dev/null \
       && info "    nodatacow ✓" \
@@ -74,7 +76,10 @@ create_subvol cache
 create_subvol gdm   yes   # GDM session state — written constantly
 
 # New subvolumes Anaconda doesn't create
-create_subvol snapshots                # /.snapshots — required by snapper + grub-btrfs
+# NOTE: /.snapshots is NOT pre-created here — snapper creates its own nested
+# .snapshots subvolume under root via create-config. Pre-creating a top-level
+# subvolume conflicts with snapper's subvolume detection (it uses btrfs subvolume
+# list and looks for root/.snapshots, not a top-level subvolume mounted there).
 create_subvol containers  yes          # ~/.local/share/containers — rootless podman
 create_subvol docker      yes          # /var/lib/docker — system docker daemon
 create_subvol libvirt                  # /var/lib/libvirt — VM config (keep CoW)
@@ -113,7 +118,6 @@ $U  /var/log                       btrfs  subvol=log,$STD           0 0
 $U  /var/tmp                       btrfs  subvol=tmp,$NOCOW         0 0
 $U  /var/cache                     btrfs  subvol=cache,$STD         0 0
 $U  /var/lib/gdm                   btrfs  subvol=gdm,$NOCOW         0 0
-$U  /.snapshots                    btrfs  subvol=snapshots,$SNAP    0 0
 $U  /var/lib/docker                btrfs  subvol=docker,$NOCOW      0 0
 $U  /var/lib/libvirt               btrfs  subvol=libvirt,$STD       0 0
 $U  /var/lib/libvirt/images        btrfs  subvol=libvirt-images,$NOCOW  0 0
@@ -131,7 +135,6 @@ grep "subvol=" /etc/fstab | sed 's/^/    /'
 section "Creating mount point directories"
 
 dirs=(
-  "/.snapshots"
   "/var/lib/docker"
   "/var/lib/flatpak"
   "/var/lib/libvirt"
@@ -153,6 +156,14 @@ info "  ownership: $HOME_DIR/.local → $USERNAME"
 section "Mounting subvolumes"
 
 systemctl daemon-reload
+
+# Mount libvirt subvolume first — freshly created, so /var/lib/libvirt/images
+# doesn't exist inside it yet. mount -a would then fail on the images entry.
+mount /var/lib/libvirt && {
+  mkdir -p /var/lib/libvirt/images
+  info "  created /var/lib/libvirt/images inside libvirt subvolume"
+} || warn "  /var/lib/libvirt mount failed — images mountpoint may be missing after reboot"
+
 mount -a && info "mount -a succeeded" \
          || warn "Some mounts may have failed — check 'findmnt --type btrfs' after reboot"
 
@@ -161,7 +172,12 @@ section "Configuring snapper"
 
 if ! rpm -q snapper &>/dev/null; then
   info "Installing snapper packages..."
-  dnf install -y snapper grub-btrfs inotify-tools python3-dnf-plugin-snapper
+  # grub-btrfs is not in standard Fedora repos — install separately so a miss
+  # doesn't abort the whole transaction
+  dnf install -y snapper inotify-tools python3-dnf-plugin-snapper
+  dnf install -y grub-btrfs 2>/dev/null \
+    && info "  grub-btrfs installed" \
+    || warn "  grub-btrfs not found in repos — install manually from COPR (kylegospo/btrfs-assistant) if you want grub snapshot boot entries"
 fi
 
 if snapper list-configs 2>/dev/null | grep -q "^root "; then
@@ -181,7 +197,7 @@ snapper -c root set-config \
   TIMELINE_LIMIT_MONTHLY=3
 info "Snapper limits tuned"
 
-for unit in snapper-timeline.timer snapper-cleanup.timer btrfs-scrub.timer btrfs-balance.timer grub-btrfsd.service; do
+for unit in snapper-timeline.timer snapper-cleanup.timer; do
   systemctl enable --now "$unit" 2>/dev/null \
     && info "  enabled: $unit" \
     || warn "  skipped: $unit (package not installed yet — bootstrap will handle it)"
@@ -208,7 +224,7 @@ Subvolume highlights:
   Rootless podman:   $HOME_DIR/.local/share/containers  (nodatacow)
   System docker:     /var/lib/docker                    (nodatacow)
   VM disk images:    /var/lib/libvirt/images             (nodatacow)
-  Snapshots:         /.snapshots                        (snapper + grub-btrfs)
+  Snapshots:         /.snapshots                        (managed by snapper, nested under root)
   Downloads:         $HOME_DIR/Downloads                (compress=zstd:3)
 
 EOF
